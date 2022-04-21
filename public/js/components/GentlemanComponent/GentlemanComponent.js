@@ -3,13 +3,16 @@ import Component from "../Component.js";
 class GentlemanComponent extends Component {
   name;
   picture;
+  action;
 
-  constructor(parentElement, name, picture) {
-    super(parentElement, "li", "gentleman");
+  constructor(parentElement, { name, picture, selected }, action) {
+    super(parentElement, "li", `gentleman${selected ? " selected" : ""}`);
     this.name = name;
     this.picture = picture;
+    this.action = action;
 
     this.render();
+    this.addListeners();
   }
 
   render() {
@@ -39,6 +42,10 @@ class GentlemanComponent extends Component {
             </div>
             <i class="icon gentleman__icon fas fa-check"></i>
     `;
+  }
+
+  addListeners() {
+    this.element.addEventListener("click", this.action);
   }
 }
 

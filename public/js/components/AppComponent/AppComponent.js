@@ -4,8 +4,33 @@ import GentlemanComponent from "../GentlemanComponent/GentlemanComponent.js";
 import InfoComponent from "../InfoComponent/InfoComponent.js";
 
 class AppComponent extends Component {
-  constructor(parentElement) {
+  gentlemen;
+
+  constructor(parentElement, gentlemen) {
     super(parentElement, "div", "container");
+    this.gentlemen = gentlemen;
+
+    this.render();
+  }
+
+  selectAllGentlemen() {
+    this.gentlemen = this.gentlemen.map((gentleman) => ({
+      ...gentleman,
+      selected: true,
+    }));
+
+    this.render();
+  }
+
+  toggleGentleman(gentlemanId) {
+    this.gentlemen = this.gentlemen.map((gentleman) =>
+      gentleman.id === gentlemanId
+        ? {
+            ...gentleman,
+            selected: !gentleman.selected,
+          }
+        : { ...gentleman }
+    );
 
     this.render();
   }
@@ -25,13 +50,19 @@ class AppComponent extends Component {
 
     const controls = this.element.querySelector(".controls");
     const gentlemenList = this.element.querySelector(".gentlemen");
-    new InfoComponent(controls, 4);
-    new ButtonComponent(controls, "Marcar todos", () => console.log("Click"));
-    new GentlemanComponent(gentlemenList, "The Fary", "fary.jpg");
-    new GentlemanComponent(gentlemenList, "July Churches", "julio.jpg");
-    new GentlemanComponent(gentlemenList, "Bertin Osbourne", "bertin.jpg");
-    new GentlemanComponent(gentlemenList, "Gerard Basté", "gerard.jpg");
-    new GentlemanComponent(gentlemenList, "John and a Half", "juan.jpg");
+    const selectedGentlemen = this.gentlemen.filter(
+      (gentleman) => gentleman.selected
+    );
+    new InfoComponent(controls, selectedGentlemen.length);
+    new ButtonComponent(controls, "Marcar todos", () =>
+      this.selectAllGentlemen()
+    );
+
+    this.gentlemen.forEach((gentleman) => {
+      new GentlemanComponent(gentlemenList, gentleman, () =>
+        this.toggleGentleman(gentleman.id)
+      );
+    });
   }
 }
 
